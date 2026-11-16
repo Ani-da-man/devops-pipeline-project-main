@@ -16,13 +16,30 @@ pipeline {
 
         stage('Test') {
             steps {
-                bat 'mvn test'
+                script {
+                    if (isUnix()) {
+                        sh './mvnw test'
+                    } else {
+                        bat 'mvnw.cmd test'
+                    }
+                }
+            }
+            post {
+                always {
+                    junit 'target/surefire-reports/*.xml'
+                }
             }
         }
 
         stage('Build') {
             steps {
-                bat 'mvn clean package -DskipTests'
+                script {
+                    if (isUnix()) {
+                        sh './mvnw clean package -DskipTests'
+                    } else {
+                        bat 'mvnw.cmd clean package -DskipTests'
+                    }
+                }
             }
         }
 
